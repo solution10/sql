@@ -1,0 +1,25 @@
+{
+    "name": "solution10/sql",
+    "description": "Completely standalone, expressive SQL query creator. No database or ORM needed.",
+    "minimum-stability": "stable",
+    "keywords": ["component", "sql", "database"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alex Gisby",
+            "email": "alex@solution10.com"
+        }
+    ],
+    "require": {
+        "php": ">= 5.4"
+    },
+    "require-dev": {
+        "solution10/devkit": "~1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Solution10\\SQL\\": "src",
+            "Solution10\\SQL\\Tests\\": "tests"
+        }
+    }
+}
