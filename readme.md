@@ -98,6 +98,19 @@ $stmt = $pdo->prepare((string)$query);
 $stmt->execute($query->params());
 ```
 
+#### Using other dialects
+
+By default, S10\SQL will assume that you're using an ANSI SQL compatible database. If you're using something
+else, MySQL for instance, simply pass into the constructor the Dialect instance:
+
+```php
+$query = (new Solution10\SQL\Select(new Solution10\SQL\Dialect\MySQL()))
+    ->select('*')
+    ->from('users')
+    ->limit(10);
+```
+
+You can also write your own dialects by implementing `Solution10\SQL\DialectInterface`.
 
 ### Userguide
 
