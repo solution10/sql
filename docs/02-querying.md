@@ -27,7 +27,7 @@ S10\SQL makes heavy use of Traits to share functionality between different Query
 that are defined are:
 
 | Trait | Description |
-|---------------------|
+|-------|-------------|
 | Where | Used for Selects, Updates and Deletes, this trait allows you to specify conditions in a query (WHERE ... portions). |
 | Having | Used for Selects, this uses the same engine as Where, allowing the same complex conditions for HAVING |
 | Pagination | Offers LIMIT and OFFSET defining functions, in an database provider safe way |
