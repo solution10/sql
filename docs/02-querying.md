@@ -8,9 +8,29 @@ all fits together.
 
 - [Fluency](#fluency)
 - [Understanding Traits Used](#understanding-traits-used)
-- [SELECT](#select)
-- [UPDATE](#update)
-- [DELETE](#delete)
+- [SELECT Queries](#select-queries)
+    - [select()](#select)
+    - [from()](#from)
+    - [join()](#join)
+    - [where()](#where)
+    - [orderBy()](#orderBy)
+    - [groupBy()](#groupBy)
+    - [having()](#having)
+    - [limit()](#limit)
+    - [offset()](#offset)
+- [INSERT Queries](#insert-queries)
+    - [table()](#table)
+    - [values()](#values)
+- [UPDATE Queries](#update-queries)
+    - [table()](#table)
+    - [values()](#values)
+    - [where()](#where)
+    - [limit()](#limit)
+- [DELETE Queries](#delete-queries)
+    - [table()](#table)
+    - [values()](#values)
+    - [where()](#where)
+    - [limit()](#limit)
 
 ## Fluency
 
@@ -27,7 +47,7 @@ S10\SQL makes heavy use of Traits to share functionality between different Query
 that are defined are:
 
 | Trait | Description |
-|---------------------|
+|-------|-------------|
 | Where | Used for Selects, Updates and Deletes, this trait allows you to specify conditions in a query (WHERE ... portions). |
 | Having | Used for Selects, this uses the same engine as Where, allowing the same complex conditions for HAVING |
 | Pagination | Offers LIMIT and OFFSET defining functions, in an database provider safe way |
@@ -116,3 +136,233 @@ LIMIT 5, 25
 
 You'll notice that the limit() and offset() have been combined into the SQL standard {offset},{limit} format
 and all of the table + column names have been appropriately quoted.
+
+### select()
+
+Chooses which columns to pull from the table you're querying.
+
+Setting selects:
+
+```php
+$q = new Solution10\SQL\Select();
+
+// Simple single column:
+$q->select('name');
+
+// Multiple columns:
+$q->select(['name', 'location']);
+
+// Single column with an alias:
+$q->select('birthday', 'dob');
+
+// Multiple columns with aliases:
+$q->select([
+    'dob' => 'birthday',
+    'my_aliased_name' => 'name',
+]);
+```
+
+select() is **additive**. This means it will append columns from subsequent calls onto the same query. If you
+wish to wipe the select portion of the query and start again, use `$q->resetSelect()`.
+
+Returning the defined selects as an array:
+
+```php
+$selects = $q->select();
+```
+
+Fetching only the select portion of the query as a string:
+
+```php
+$selectString = $q->buildSelectSQL();
+```
+
+Resetting (emptying) the select portion of the query:
+
+```php
+$q->resetSelect();
+```
+
+### from()
+
+Selects which tables to pull data from.
+
+Setting froms:
+
+```php
+$q = new Solution10\SQL\Select();
+
+// Simple table name
+$q->from('users');
+
+// Table with an alias:
+$q->from('locations', 'loc');
+```
+
+from() is **additive**. This means it will append tables from subsequent calls onto the same query. If you
+wish to wipe the from portion of the query and start again, use `$q->resetFrom()`.
+
+Returning the defined from tables as an array:
+
+```php
+$tables = $q->from();
+```
+
+Fetching only the FROM portion of the query as a string:
+
+```php
+$fromString = $q->buildFromSQL();
+```
+
+Resetting (emptying) the from portion of the query:
+
+```php
+$q->resetFrom();
+```
+
+### where()
+
+Apply conditions onto the query. This can be simple, or nested to any depth.
+
+```php
+$q = new Solution10\SQL\Select();
+$q->where('name', '=', 'Alex');
+```
+
+where() is an AND join between conditions, so:
+
+```php
+$q
+    ->where('name', '=', 'Alex')
+    ->where('age', '>=', 27);
+```
+
+becomes:
+
+```sql
+WHERE 'name' = ? AND age > ?
+```
+
+You can specify OR conditions with `orWhere()`:
+
+```php
+$q
+    ->where('name', '=', 'Alex')
+    ->orWhere('name', '=', 'Lucie');
+```
+
+which becomes:
+
+```sql
+WHERE name = ? OR name = ?
+```
+
+You can also 'nest' queries using closures:
+
+```php
+$q->where(function(Solution10\SQL\ConditionBuilder $subConditions) {
+    $subConditions
+        ->andWith('name', '=', 'Alex')
+        ->orWith('name', '=', 'Lucie')
+});
+```
+
+Which will wrap the conditions in a group:
+
+```sql
+WHERE (
+    name = ?
+    OR name = ?
+)
+```
+
+Which allows you to do complex stuff like:
+
+```php
+$q->where(function (ConditionBuilder $query) {
+        $query
+            ->andWith('locations.city', '=', 'London')
+            ->andWith('locations.country', '=', 'GB');
+    })
+    ->orWhere(function (ConditionBuilder $query) {
+        $query
+            ->andWith('locations.city', '=', 'Toronto')
+            ->andWith('locations.country', '=', 'CA')
+            ->orWith(function (ConditionBuilder $query) {
+                $query->andWith('users.active', '!=', true);
+            });
+    })
+```
+
+which would generate:
+
+```sql
+WHERE
+    (
+        "locations"."city" = ?
+        AND "locations"."country" = ?
+    )
+    OR (
+        "locations"."city" = ?
+        AND "locations"."country" = ?
+        OR (
+            "users"."active" != ?
+        )
+    )
+```
+
+where() and orWhere() are **additive**; Conditions will be appended to the query.
+
+Returning the defined conditions as an array:
+
+```php
+$conditions = $q->where();
+```
+
+Fetching only the WHERE portion of the query as a string:
+
+```php
+$fromString = $q->buildWhereSQL();
+```
+
+Resetting (emptying) the conditions of the query:
+
+```php
+$q->resetWhere();
+```
+
+### orderBy()
+
+Define the columns and direction to order with.
+
+```php
+$q = new Solution10\SQL\Select();
+
+$q
+    ->orderBy('name', 'ASC')
+    ->orderBy('id', 'DESC');
+```
+
+generates:
+
+```sql
+ORDER BY name ASC, id DESC
+```
+
+Returning the defined ORDER BY's as an array:
+
+```php
+$ordering = $q->orderBy();
+```
+
+Fetching only the ORDER BY portion of the query as a string:
+
+```php
+$orderByString = $q->buildOrderBySQL();
+```
+
+Resetting (emptying) the ORDER portion of the query:
+
+```php
+$q->resetOrderBy();
+```
