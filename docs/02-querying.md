@@ -240,7 +240,7 @@ $q
 becomes:
 
 ```sql
-WHERE 'name' = ? AND age > ?
+WHERE "name" = ? AND "age" > ?
 ```
 
 You can specify OR conditions with `orWhere()`:
@@ -254,7 +254,7 @@ $q
 which becomes:
 
 ```sql
-WHERE name = ? OR name = ?
+WHERE "name" = ? OR "name" = ?
 ```
 
 You can also 'nest' queries using closures:
@@ -271,8 +271,8 @@ Which will wrap the conditions in a group:
 
 ```sql
 WHERE (
-    name = ?
-    OR name = ?
+    "name" = ?
+    OR "name" = ?
 )
 ```
 
@@ -346,7 +346,7 @@ $q
 generates:
 
 ```sql
-ORDER BY name ASC, id DESC
+ORDER BY "name" ASC, "id" DESC
 ```
 
 Returning the defined ORDER BY's as an array:
@@ -366,3 +366,288 @@ Resetting (emptying) the ORDER portion of the query:
 ```php
 $q->resetOrderBy();
 ```
+
+### groupBy()
+
+Define the columns to groupBy.
+
+```php
+$q = new Solution10\SQL\Select();
+
+$q
+    ->groupBy('user.name')
+    ->groupBy('user.location');
+```
+
+generates:
+
+```sql
+GROUP BY "user"."name", "user"."location"
+```
+
+Returning the defined GROUP BY's as an array:
+
+```php
+$groupings = $q->groupBy();
+```
+
+Fetching only the GROUP BY portion of the query as a string:
+
+```php
+$groupByString = $q->buildGroupBySQL();
+```
+
+Resetting (emptying) the GROUP BY portion of the query:
+
+```php
+$q->resetGroupBy();
+```
+
+### having()
+
+Having behaves and has exactly the same feature set as where() (including an `orHaving()` function).
+
+You can also nest in exactly the same way, here's an example:
+
+```php
+$q
+    ->having(function (ConditionBuilder $query) {
+        $query
+            ->andWith('city', '=', 'London')
+            ->andWith('country', '=', 'GB');
+    })
+    ->orHaving(function (ConditionBuilder $query) {
+        $query
+            ->andWith('city', '=', 'Toronto')
+            ->andWith('country', '=', 'CA')
+            ->orWith(function (ConditionBuilder $query) {
+                $query->andWith('active', '!=', true);
+            });
+    });
+```
+
+Notice how the nesting uses the same "with" prefixed functions.
+
+Returning the defined HAVING's as an array:
+
+```php
+$having = $q->having();
+```
+
+Fetching only the HAVING portion of the query as a string:
+
+```php
+$havingString = $q->buildHavingSQL();
+```
+
+Resetting (emptying) the HAVING portion of the query:
+
+```php
+$q->resetHaving();
+```
+
+### limit()
+
+Sets the number of results to return.
+
+```php
+$q = new Solution10\SQL\Select();
+
+$q->limit(10);
+```
+
+generates:
+
+```sql
+LIMIT 10
+```
+
+Returning the defined LIMIT as an array:
+
+```php
+$limit = $q->limit();
+```
+
+Fetching only the LIMIT portion of the query as a string:
+
+```php
+$pagination = $q->buildPaginateSQL();
+```
+
+Resetting (emptying) the LIMIT portion of the query:
+
+```php
+$q->resetLimit();
+```
+
+### offset()
+
+Sets where to start counting results from.
+
+```php
+$q = new Solution10\SQL\Select();
+
+$q->limit(10);
+$q->offset(25);
+```
+
+generates:
+
+```sql
+LIMIT 25,10
+```
+
+Returning the defined offset as an array:
+
+```php
+$offset = $q->offset();
+```
+
+Fetching only the LIMIT portion of the query as a string:
+
+```php
+$pagination = $q->buildPaginateSQL();
+```
+
+Resetting (emptying) the offset portion of the query:
+
+```php
+$q->resetOffset();
+```
+
+
+## INSERT Queries
+
+### table()
+
+Sets which table we're inserting into.
+
+```php
+$q = new Solution10\SQL\Insert();
+
+$q->table('users');
+```
+
+generates:
+
+```sql
+INSERT INTO "users"
+```
+
+Returning the table name:
+
+```php
+$table = $q->table();
+```
+
+Resetting (emptying) the table portion of the query:
+
+```php
+$q->resetTable();
+```
+
+### values()
+
+Key value pairs of values for the query. If the value has already been set, the second call to values() will
+overwrite the old one.
+
+```php
+$q->values(['name' => 'Alex', 'location' => 27]);
+```
+
+Returning the values:
+
+```php
+$values = $q->values();
+```
+
+## UPDATE Queries
+
+### table()
+
+Sets which table we're inserting into.
+
+```php
+$q = new Solution10\SQL\Insert();
+
+$q->table('users');
+```
+
+generates:
+
+```sql
+INSERT INTO "users"
+```
+
+Returning the table name:
+
+```php
+$table = $q->table();
+```
+
+Resetting (emptying) the table portion of the query:
+
+```php
+$q->resetTable();
+```
+
+### values()
+
+Key value pairs of values for the query. If the value has already been set, the second call to values() will
+overwrite the old one.
+
+```php
+$q->values(['name' => 'Alex', 'location' => 27]);
+```
+
+Returning the values:
+
+```php
+$values = $q->values();
+```
+
+### where()
+
+See [SELECT - where()](#where).
+
+### limit()
+
+See [SELECT - limit()](#limit).
+
+## DELETE Queries
+
+### table()
+
+Sets which table we're inserting into.
+
+```php
+$q = new Solution10\SQL\Insert();
+
+$q->table('users');
+```
+
+generates:
+
+```sql
+INSERT INTO "users"
+```
+
+Returning the table name:
+
+```php
+$table = $q->table();
+```
+
+Resetting (emptying) the table portion of the query:
+
+```php
+$q->resetTable();
+```
+
+### where()
+
+See [SELECT - where()](#where).
+
+### limit()
+
+See [SELECT - limit()](#limit).
