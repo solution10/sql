@@ -59,4 +59,21 @@ class Delete extends Query
         $this->resetWhere();
         return $this;
     }
+
+    /*
+     * ------------------- All Tables ------------------------
+     */
+
+    /**
+     * Returns all the tables that this query makes mention of, in FROMs and JOINs
+     *
+     * @return  array
+     */
+    public function allTablesReferenced()
+    {
+        if ($this->table()) {
+            return [$this->table()];
+        }
+        return [];
+    }
 }

@@ -31,6 +31,7 @@ all fits together.
     - [values()](#values)
     - [where()](#where)
     - [limit()](#limit)
+- [All Tables Referenced](#all-tables-referenced)
 
 ## Fluency
 
@@ -218,6 +219,58 @@ Resetting (emptying) the from portion of the query:
 
 ```php
 $q->resetFrom();
+```
+
+### join()
+
+There are three join functions:
+
+- `join()`: an "inner" JOIN
+- `leftJoin()`: a left JOIN
+- `rightJoin()`: a right JOIN
+
+They all take the same arguments; `join(table-to-join, left-join-column, operator, right-join-column)`
+
+```php
+$q->join('locations', 'locations.id', '=', 'users.location_id');
+```
+
+generates:
+
+```sql
+JOIN "locations" ON "locations"."id" = "users"."location_id"
+```
+
+Naturally, `leftJoin()` and `rightJoin()` work in the same way:
+
+```php
+$q->leftJoin('locations', 'locations.id', '=', 'users.location_id');
+$q->rightJoin('locations', 'locations.id', '=', 'users.location_id');
+```
+
+generate:
+
+```php
+LEFT JOIN "locations" ON "locations"."id" = "users"."location_id"
+RIGHT JOIN "locations" ON "locations"."id" = "users"."location_id"
+```
+
+You can return all the defined join()'s like so:
+
+```php
+$joins = $q->join();
+```
+
+Build up only the JOIN SQL string:
+
+```php
+$joinSQL = $q->buildJoinSQL();
+```
+
+And reset all the joins:
+
+```php
+$q->resetJoins();
 ```
 
 ### where()
@@ -651,3 +704,18 @@ See [SELECT - where()](#where).
 ### limit()
 
 See [SELECT - limit()](#limit).
+
+## All Tables Referenced
+
+All of the queries in S10\SQL also give you the ability to ask for a list of tables that the
+query is operating on. This combines INTO, FROM, JOIN etc into a single array, so you can know
+exactly what the query will be touching.
+
+The method signature is the same for all query types:
+
+```php
+$tables = $q->allTablesReferenced();
+```
+
+**Note**: this will return the full table name and NOT any aliases you might have set up. If you need the aliases,
+you'll have to talk to the `table()`, `from()`, `join()` etc functions directly.

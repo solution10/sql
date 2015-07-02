@@ -60,4 +60,11 @@ abstract class Query
      * @return  $this
      */
     abstract public function reset();
+
+    /**
+     * Returns all the tables that this query makes mention of, in FROMs and JOINs
+     *
+     * @return  array
+     */
+    abstract public function allTablesReferenced();
 }

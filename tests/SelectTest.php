@@ -572,4 +572,73 @@ class SelectTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('', $q->sql());
         $this->assertEquals([], $q->params());
     }
+
+    // ----------------- All Tables Tests -------------------------
+
+    public function testTablesReferencedFrom()
+    {
+        $q = new Select();
+        $this->assertEquals([], $q->allTablesReferenced());
+
+        $q = new Select();
+        $q->from('users');
+        $this->assertEquals(['users'], $q->allTablesReferenced());
+
+        $q = new Select();
+        $q->from('users', 'u');
+        $this->assertEquals(['users'], $q->allTablesReferenced());
+
+        $q = new Select();
+        $q
+            ->from('users')
+            ->from('locations');
+        $this->assertEquals(['users', 'locations'], $q->allTablesReferenced());
+
+        $q = new Select();
+        $q
+            ->from('users', 'u')
+            ->from('locations', 'l');
+        $this->assertEquals(['users', 'locations'], $q->allTablesReferenced());
+    }
+
+    public function testTablesReferencedJoin()
+    {
+        $q = new Select();
+        $q->join('locations', 'locations.id', '=', 'users.location_id');
+        $this->assertEquals(['locations'], $q->allTablesReferenced());
+
+        $q = new Select();
+        $q->leftJoin('locations', 'locations.id', '=', 'users.location_id');
+        $this->assertEquals(['locations'], $q->allTablesReferenced());
+
+        $q = new Select();
+        $q->rightJoin('locations', 'locations.id', '=', 'users.location_id');
+        $this->assertEquals(['locations'], $q->allTablesReferenced());
+
+        $q = new Select();
+        $q
+            ->join('locations', 'locations.id', '=', 'users.location_id')
+            ->join('addresses', 'addresses.id', '=', 'users.address_id');
+        $this->assertEquals(['locations', 'addresses'], $q->allTablesReferenced());
+    }
+
+    public function testTablesReferencedBoth()
+    {
+        $q = new Select();
+        $q
+            ->from('users', 'u')
+            ->join('locations', 'locations.id', '=', 'users.location_id')
+            ->join('addresses', 'addresses.id', '=', 'users.address_id');
+
+        $this->assertEquals(['users', 'locations', 'addresses'], $q->allTablesReferenced());
+    }
+
+    public function testTablesReferencedDuplicates()
+    {
+        $q = new Select();
+        $q->from('users');
+        $q->join('users', 'user.mother_id', '=', 'users.id');
+
+        $this->assertEquals(['users'], $q->allTablesReferenced());
+    }
 }

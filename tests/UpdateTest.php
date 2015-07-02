@@ -67,4 +67,19 @@ class UpdateTest extends PHPUnit_Framework_TestCase
         $this->assertEquals([], $q->values());
         $this->assertEquals([], $q->getWhereParams());
     }
+
+    public function testAllTablesReferenced()
+    {
+        $q = new Update();
+        $this->assertEquals([], $q->allTablesReferenced());
+
+        $q = new Update();
+        $q->table('users');
+        $this->assertEquals(['users'], $q->allTablesReferenced());
+
+        $q = new Update();
+        $q->table('users');
+        $q->table('locations');
+        $this->assertEquals(['locations'], $q->allTablesReferenced());
+    }
 }

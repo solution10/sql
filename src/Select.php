@@ -472,4 +472,36 @@ class Select extends Query
             ->resetLimit()
             ->resetOffset();
     }
+
+    /*
+     * ------------------- All Tables ------------------------
+     */
+
+    /**
+     * Returns all the tables that this query makes mention of, in FROMs and JOINs
+     *
+     * @return  array
+     */
+    public function allTablesReferenced()
+    {
+        $tables = [];
+
+        // Deal with FROMs:
+        if ($this->fromTables) {
+            foreach ($this->fromTables as $tbl) {
+                $tables[] = $tbl['table'];
+            }
+        }
+
+        // And now JOINs:
+        if ($this->joins) {
+            foreach ($this->joins as $type => $joins) {
+                foreach ($joins as $join) {
+                    $tables[] = $join['right'];
+                }
+            }
+        }
+
+        return array_unique($tables);
+    }
 }

@@ -61,4 +61,19 @@ class InsertTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('', (string)$q);
         $this->assertEquals([], $q->values());
     }
+
+    public function testAllTablesReferenced()
+    {
+        $q = new Insert();
+        $this->assertEquals([], $q->allTablesReferenced());
+
+        $q = new Insert();
+        $q->table('users');
+        $this->assertEquals(['users'], $q->allTablesReferenced());
+
+        $q = new Insert();
+        $q->table('users');
+        $q->table('locations');
+        $this->assertEquals(['locations'], $q->allTablesReferenced());
+    }
 }
