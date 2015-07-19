@@ -17,6 +17,14 @@ $q = new Solution10\SQL\Select(
 );
 ```
 
+You can also get or set the dialect later if you wish:
+
+```php
+$query = new Solution10\SQL\Select();
+$dialect = $query->dialect();
+$query->dialect(new Solution10\SQL\Dialect\MySQL());
+```
+
 ## What changes?
 
 The differences mostly boil down to how names are quoted. Under ANSI SQL, table

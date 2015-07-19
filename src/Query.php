@@ -31,6 +31,21 @@ abstract class Query
     }
 
     /**
+     * Get/set the dialect in use for this query.
+     *
+     * @param   null|DialectInterface   $dialect    Null to get, DialectInterface to set
+     * @return  DialectInterface|$this  DialectInterface on get, $this on set.
+     */
+    public function dialect(DialectInterface $dialect = null)
+    {
+        if ($dialect === null) {
+            return $this->dialect;
+        }
+        $this->dialect = $dialect;
+        return $this;
+    }
+
+    /**
      * Generates the full SQL statement for this query with all the composite parts.
      *
      * @return  string
