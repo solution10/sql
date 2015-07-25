@@ -32,6 +32,7 @@ all fits together.
     - [where()](#where)
     - [limit()](#limit)
 - [All Tables Referenced](#all-tables-referenced)
+- [Non Standard Queries](#non-standard-queries)
 
 ## Fluency
 
@@ -719,3 +720,27 @@ $tables = $q->allTablesReferenced();
 
 **Note**: this will return the full table name and NOT any aliases you might have set up. If you need the aliases,
 you'll have to talk to the `table()`, `from()`, `join()` etc functions directly.
+
+## Non Standard Queries
+
+What about if you want to use something like `REPLACE INTO` which is a non-standard statement, but extremely useful?
+
+Well one option is to subclass the existing queries. `UPDATE` is very similar to `REPLACE INTO` so you could simply
+subclass and modify the `sql()` method on it.
+
+However there's an easier way. You can modify the "base statement" of any of the built in queries like so:
+
+```php
+$q = new Update();
+$q->queryBaseStatement('REPLACE INTO');
+```
+
+This also allows you to do things like `SELECT DISTINCT`:
+
+```php
+$q = new Select();
+$q->queryBaseStatement('SELECT DISTINCT');
+```
+
+**Note**: the input to queryBaseStatement is NOT escaped or sanitised in any way. Be extremely careful how you craft the
+string which will go in here.

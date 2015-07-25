@@ -1,8 +1,12 @@
 # Changelog
 
+## v1.3.0
+
+- Added `queryBaseStatement()` to allow for REPLACE INTO and SELECT DISTINCT queries
+
 ## v1.2.0
 
-- Added dialect() function to allow getting / setting of dialects after construction.
+- Added `dialect()` function to allow getting / setting of dialects after construction.
 
 ## v1.1.0
 
