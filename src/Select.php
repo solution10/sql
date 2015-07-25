@@ -18,6 +18,11 @@ class Select extends Query
     use Paginate;
 
     /**
+     * @var     string      The base part of the query
+     */
+    protected $queryBase = 'SELECT';
+
+    /**
      * @var     array
      */
     protected $selectColumns = [];
@@ -102,7 +107,7 @@ class Select extends Query
             $ret .= ($c['alias'] != null)? ' AS '.$this->dialect->quoteField($c['alias']) : '';
             $parts[] = $ret;
         }
-        return 'SELECT '.implode(', ', $parts);
+        return $this->queryBase.' '.implode(', ', $parts);
     }
 
     /**

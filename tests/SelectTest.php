@@ -9,6 +9,18 @@ use Solution10\SQL\Select;
 class SelectTest extends PHPUnit_Framework_TestCase
 {
     /*
+     * ------------------- Core Tests ------------------------
+     */
+
+    public function testQueryBase()
+    {
+        $query = new Select;
+        $this->assertEquals('SELECT', $query->queryBaseStatement());
+        $this->assertEquals($query, $query->queryBaseStatement('SELECT DISTINCT'));
+        $this->assertEquals('SELECT DISTINCT', $query->queryBaseStatement());
+    }
+
+    /*
      * ------------------- SELECT testing -------------------------
      */
     public function testSelect()

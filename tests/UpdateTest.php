@@ -7,6 +7,14 @@ use Solution10\SQL\Update;
 
 class UpdateTest extends PHPUnit_Framework_TestCase
 {
+    public function testQueryBase()
+    {
+        $query = new Update;
+        $this->assertEquals('UPDATE', $query->queryBaseStatement());
+        $this->assertEquals($query, $query->queryBaseStatement('REPLACE INTO'));
+        $this->assertEquals('REPLACE INTO', $query->queryBaseStatement());
+    }
+
     public function testTable()
     {
         $q = new Update();

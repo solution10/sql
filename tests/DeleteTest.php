@@ -7,6 +7,14 @@ use Solution10\SQL\Delete;
 
 class DeleteTest extends PHPUnit_Framework_TestCase
 {
+    public function testQueryBase()
+    {
+        $query = new Delete;
+        $this->assertEquals('DELETE FROM', $query->queryBaseStatement());
+        $this->assertEquals($query, $query->queryBaseStatement('DELETE SPECIAL'));
+        $this->assertEquals('DELETE SPECIAL', $query->queryBaseStatement());
+    }
+
     public function testTable()
     {
         $q = new Delete();
