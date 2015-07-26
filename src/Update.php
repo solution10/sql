@@ -19,6 +19,11 @@ class Update extends Query
     use Paginate;
 
     /**
+     * @var     string      The base part of the query
+     */
+    protected $queryBase = 'UPDATE';
+
+    /**
      * Generates the full SQL statement for this query with all the composite parts.
      *
      * @return  string
@@ -30,7 +35,7 @@ class Update extends Query
         }
 
         $candidateParts = [
-            'UPDATE',
+            $this->queryBase,
             $this->dialect->quoteTable($this->table),
             $this->valuesSQL(),
             $this->buildWhereSQL($this->dialect),

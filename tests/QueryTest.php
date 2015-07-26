@@ -3,7 +3,6 @@
 namespace Solution10\SQL\Tests;
 
 use Solution10\SQL\Dialect\MySQL;
-use Solution10\SQL\Select;
 
 class QueryTest extends \PHPUnit_Framework_TestCase
 {
@@ -63,12 +62,22 @@ class QueryTest extends \PHPUnit_Framework_TestCase
     
     public function testDeleteFlag()
     {
-        /* @var     \Solution10\SQL\Query   $query  */
+        /* @var     \Solution10\SQL\Query $query */
         $query = $this->getMockForAbstractClass('Solution10\\SQL\\Query', []);
         $query->flag('ttl', 30);
         $this->assertEquals(30, $query->flag('ttl'));
 
         $this->assertEquals($query, $query->deleteFlag('ttl'));
         $this->assertEquals(null, $query->flag('ttl'));
+    }
+
+    public function testGetSetQueryBase()
+    {
+        /* @var     \Solution10\SQL\Query    $q  */
+        $q = $this->getMockForAbstractClass('Solution10\\SQL\\Query');
+        $this->assertNull($q->queryBaseStatement());
+
+        $this->assertEquals($q, $q->queryBaseStatement('SELECT DISTINCT'));
+        $this->assertEquals('SELECT DISTINCT', $q->queryBaseStatement());
     }
 }

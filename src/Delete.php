@@ -18,6 +18,11 @@ class Delete extends Query
     use Paginate;
 
     /**
+     * @var     string      The base part of the query
+     */
+    protected $queryBase = 'DELETE FROM';
+
+    /**
      * Generates the full SQL statement for this query with all the composite parts.
      *
      * @return  string
@@ -29,7 +34,7 @@ class Delete extends Query
         }
 
         $candidateParts = [
-            'DELETE FROM',
+            $this->queryBase,
             $this->dialect->quoteTable($this->table),
             $this->buildWhereSQL($this->dialect),
             $this->buildPaginateSQL()

@@ -17,6 +17,11 @@ class Insert extends Query
     use Values;
 
     /**
+     * @var     string      The base part of the query
+     */
+    protected $queryBase = 'INSERT INTO';
+
+    /**
      * Generates the full SQL statement for this query with all the composite parts.
      *
      * @return  string
@@ -28,7 +33,7 @@ class Insert extends Query
         }
 
         $candidateParts = [
-            'INSERT INTO',
+            $this->queryBase,
             $this->dialect->quoteTable($this->table),
             $this->valuesSQL(),
         ];

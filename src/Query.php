@@ -21,6 +21,11 @@ abstract class Query
     protected $dialect;
 
     /**
+     * @var     string      The base part of the query (SELECT, INSERT etc)
+     */
+    protected $queryBase = null;
+
+    /**
      * @var     array   Flags for this query
      */
     protected $flags = [];
@@ -33,6 +38,22 @@ abstract class Query
     public function __construct(DialectInterface $dialect = null)
     {
         $this->dialect = ($dialect === null)? new ANSI() : $dialect;
+    }
+
+    /**
+     * Gets/sets the query base for this query.
+     * Note: This will NOT be escaped in any way! Be super careful what you pass.
+     *
+     * @param   null|string     $base   Null to get, string to set
+     * @return  string|$this    String on get, $this on set
+     */
+    public function queryBaseStatement($base = null)
+    {
+        if ($base === null) {
+            return $this->queryBase;
+        }
+        $this->queryBase = $base;
+        return $this;
     }
 
     /**

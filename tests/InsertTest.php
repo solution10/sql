@@ -7,6 +7,14 @@ use Solution10\SQL\Insert;
 
 class InsertTest extends PHPUnit_Framework_TestCase
 {
+    public function testQueryBase()
+    {
+        $query = new Insert;
+        $this->assertEquals('INSERT INTO', $query->queryBaseStatement());
+        $this->assertEquals($query, $query->queryBaseStatement('INSERT SPECIAL'));
+        $this->assertEquals('INSERT SPECIAL', $query->queryBaseStatement());
+    }
+
     public function testTable()
     {
         $q = new Insert();
