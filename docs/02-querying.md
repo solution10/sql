@@ -33,6 +33,7 @@ all fits together.
     - [limit()](#limit)
 - [All Tables Referenced](#all-tables-referenced)
 - [Non Standard Queries](#non-standard-queries)
+- [Query Flags](#query-flags)
 
 ## Fluency
 
@@ -744,3 +745,35 @@ $q->queryBaseStatement('SELECT DISTINCT');
 
 **Note**: the input to queryBaseStatement is NOT escaped or sanitised in any way. Be extremely careful how you craft the
 string which will go in here.
+
+## Query Flags
+
+Sometimes you might have additional metadata that you want to pass along with the query, but that is unrelated to
+the generation of the SQL. For example, a cache time-to-live value which can be used by your ORM.
+
+S10\SQL provides a `flag()` function on all queries which allows you to set this extra metadata.
+
+```php
+$q = new Select;
+$q->flag('ttl', 30);
+
+$flagValue = $q->flag('ttl');
+```
+
+You can also set and get multiple flags at once:
+
+```php
+$q->flags([
+    'ttl' => 30,
+    'cacheKey' => 'mykey',
+    'model' => new User
+]);
+
+$allFlags = $q->flags();
+```
+
+And delete flags entirely:
+
+```php
+$q->deleteFlag('ttl');
+```

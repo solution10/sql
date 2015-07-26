@@ -3,6 +3,7 @@
 ## v1.3.0
 
 - Added `queryBaseStatement()` to allow for REPLACE INTO and SELECT DISTINCT queries
+- Added `flag()` function for additional query metadata.
 
 ## v1.2.0
 
