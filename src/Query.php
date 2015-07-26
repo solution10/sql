@@ -26,6 +26,11 @@ abstract class Query
     protected $queryBase = null;
 
     /**
+     * @var     array   Flags for this query
+     */
+    protected $flags = [];
+
+    /**
      * Pass in a dialect, otherwise it'll assume ANSI SQL.
      *
      * @param   DialectInterface|null    $dialect
@@ -63,6 +68,58 @@ abstract class Query
             return $this->dialect;
         }
         $this->dialect = $dialect;
+        return $this;
+    }
+
+    /**
+     * Get/Set a flag for the query. Flags are any metadata that you want passed around with
+     * the query, but not necessarily used within the generation of the SQL. For example you
+     * might put a cache TTL in there, or some engine specific flag for your database adapter
+     * to later read and use.
+     *
+     * Any type can be used as the flag value.
+     *
+     * @param   string      $flag   Name of the flag
+     * @param   null|mixed  $value  Null to get the flag, mixed to set it
+     * @return  mixed|$this Flag value on read (null for not set), or $this on set.
+     */
+    public function flag($flag, $value = null)
+    {
+        if ($value === null) {
+            return (array_key_exists($flag, $this->flags))? $this->flags[$flag] : null;
+        }
+        $this->flags[$flag] = $value;
+        return $this;
+    }
+
+    /**
+     * Gets/Sets multiple flags for the query. Get returns all flags as a key => value array.
+     * Set accepts a key => value array.
+     *
+     * @param   null|array      $flags  Null for get, array for set
+     * @return  array|$this     array on get, $this on set
+     * @see     Query::flag() for more info on flags.
+     */
+    public function flags(array $flags = null)
+    {
+        if (!is_array($flags)) {
+            return $this->flags;
+        }
+        foreach ($flags as $f => $v) {
+            $this->flags[$f] = $v;
+        }
+        return $this;
+    }
+
+    /**
+     * Deletes a flag from the query.
+     *
+     * @param   string  $flag   Name of the flag
+     * @return  $this
+     */
+    public function deleteFlag($flag)
+    {
+        unset($this->flags[$flag]);
         return $this;
     }
 

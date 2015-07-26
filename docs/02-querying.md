@@ -32,6 +32,8 @@ all fits together.
     - [where()](#where)
     - [limit()](#limit)
 - [All Tables Referenced](#all-tables-referenced)
+- [Non Standard Queries](#non-standard-queries)
+- [Query Flags](#query-flags)
 
 ## Fluency
 
@@ -719,3 +721,59 @@ $tables = $q->allTablesReferenced();
 
 **Note**: this will return the full table name and NOT any aliases you might have set up. If you need the aliases,
 you'll have to talk to the `table()`, `from()`, `join()` etc functions directly.
+
+## Non Standard Queries
+
+What about if you want to use something like `REPLACE INTO` which is a non-standard statement, but extremely useful?
+
+Well one option is to subclass the existing queries. `UPDATE` is very similar to `REPLACE INTO` so you could simply
+subclass and modify the `sql()` method on it.
+
+However there's an easier way. You can modify the "base statement" of any of the built in queries like so:
+
+```php
+$q = new Update();
+$q->queryBaseStatement('REPLACE INTO');
+```
+
+This also allows you to do things like `SELECT DISTINCT`:
+
+```php
+$q = new Select();
+$q->queryBaseStatement('SELECT DISTINCT');
+```
+
+**Note**: the input to queryBaseStatement is NOT escaped or sanitised in any way. Be extremely careful how you craft the
+string which will go in here.
+
+## Query Flags
+
+Sometimes you might have additional metadata that you want to pass along with the query, but that is unrelated to
+the generation of the SQL. For example, a cache time-to-live value which can be used by your ORM.
+
+S10\SQL provides a `flag()` function on all queries which allows you to set this extra metadata.
+
+```php
+$q = new Select;
+$q->flag('ttl', 30);
+
+$flagValue = $q->flag('ttl');
+```
+
+You can also set and get multiple flags at once:
+
+```php
+$q->flags([
+    'ttl' => 30,
+    'cacheKey' => 'mykey',
+    'model' => new User
+]);
+
+$allFlags = $q->flags();
+```
+
+And delete flags entirely:
+
+```php
+$q->deleteFlag('ttl');
+```
